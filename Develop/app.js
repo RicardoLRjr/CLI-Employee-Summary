@@ -62,25 +62,38 @@ function askName() {
                     }
      ]).then(answers => {
          if (answers.role == "manager"){
-            const manager = new Manager(answers.name, answers.email, answers.ID, answers.role, answers.officeNumber)
+            const manager = new Manager(answers.name, answers.ID, answers.email, answers.role, answers.officeNumber, )
             console.log(manager)
         employees.push(manager)}
            else if (answers.role == "intern"){
-                const intern = new Intern(answers.name, answers.email, answers.ID, answers.role, answers.school)
+                const intern = new Intern(answers.name, answers.ID, answers.email, answers.role, answers.school)
                 console.log(intern)
                 employees.push(intern)}
                else if (answers.role == "engineer"){
-                    const engineer = new Engineer(answers.name, answers.email, answers.ID, answers.role, answers.gitHub)
+                    const engineer = new Engineer(answers.name, answers.ID, answers.email, answers.role, answers.gitHub)
                     console.log(engineer)
                     employees.push(engineer)}
                     else if (answers.role == "employee"){
-                        const employee = new Employee(answers.name, answers.email, answers.ID, answers.role, answers.officeNumber)
+                        const employee = new Employee(answers.name, answers.ID, answers.email, answers.role)
                         console.log(employee)
                         employees.push(employee)}
                         else{
                             return
                         }
          }).then(answers => {
+            render(employees);
+            console.log(render(employees))
+            const htmlFramework = render(employees)
+            fs.writeFile(outputPath, htmlFramework, function(err){
+                if (err) {
+                    console.log(err);
+                  }
+                  else {
+                    console.log("Your Employee Summary has been written!")
+                  }    
+              });
+
+        }).then(answers => {
              inquirer.prompt([
             {
                 type: "confirm",
@@ -92,10 +105,7 @@ function askName() {
                 askName();
             } 
             else {
-                console.log(employees)
-                render(employees);
-                fs.writeFile(outputPath, render(employees))
-            console.log(render(employees));
+                return          
         }
         })
     })
