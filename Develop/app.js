@@ -1,13 +1,14 @@
+const Employee = require("./lib/Employee")
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
 const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
-// ​const OUTPUT_DIR = path.resolve(__dirname, "Develop\output");
-// const outputPath = path.join(OUTPUT_DIR, "team.html");
+const OUTPUT_DIR = path.resolve(__dirname, "output")
+const outputPath = path.join(OUTPUT_DIR, "team.html");
 const render = require("./lib/htmlRenderer");
-
+var employees = []
 
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
@@ -33,10 +34,74 @@ function askName() {
             type: "checkbox",
             name: "role",
             message: "What is this employee's role?",
-            choices: ["Employee", "Manager", "Intern", "Engineer"]
+            choices: ["employee", "manager", "intern", "engineer"]
+        },
+                {
+            when: function (answer) {
+              return answer.role == "manager";
+            },
+            type: "input",
+            name: "officeNumber",
+            message: "What is this employee's office number?",
+            },
+            {
+                when: function (answer) {
+                  return answer.role == "engineer";
+                },
+                type: "input",
+                name: "gitHub",
+                message: "What is this employee's GitHub user name?",
+                },
+                {
+                    when: function (answer) {
+                      return answer.role == "intern";
+                    },
+                    type: "input",
+                    name: "school",
+                    message: "What is this employee's school?",
+                    }
+     ]).then(answers => {
+         if (answers.role == "manager"){
+            const manager = new Manager(answers.name, answers.email, answers.ID, answers.role, answers.officeNumber)
+            console.log(manager)
+        employees.push(manager)}
+           else if (answers.role == "intern"){
+                const intern = new Intern(answers.name, answers.email, answers.ID, answers.role, answers.school)
+                console.log(intern)
+                employees.push(intern)}
+               else if (answers.role == "engineer"){
+                    const engineer = new Engineer(answers.name, answers.email, answers.ID, answers.role, answers.gitHub)
+                    console.log(engineer)
+                    employees.push(engineer)}
+                    else if (answers.role == "employee"){
+                        const employee = new Employee(answers.name, answers.email, answers.ID, answers.role, answers.officeNumber)
+                        console.log(employee)
+                        employees.push(employee)}
+                        else{
+                            return
+                        }
+         }).then(answers => {
+             inquirer.prompt([
+            {
+                type: "confirm",
+                name: "runAgain",
+                messsage: "Add another employee?"
+            }
+        ]).then(answers => {
+            if(answers.runAgain == true){
+                askName();
+            } 
+            else {
+                console.log(employees)
+                render(employees);
+                fs.writeFile(outputPath, render(employees))
+            console.log(render(employees));
         }
-    ])
-}
+        })
+    })
+
+    }
+
 askName();
 // After the user has input all employees desired, call the `render` function (required
 // above) and pass in an array containing all employee objects; the `render` function will
